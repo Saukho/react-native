@@ -14,66 +14,70 @@ import {
   Button,
   View,
   FlatList,
-  TouchableOpacity,
 } from 'react-native';
 
 const App = () => {
-  const [fish, setFish] = useState();
-  const [list, addFish] = useState([]);
+  const [type, setType] = useState();
+  const [size, setSize] = useState();
+  const [list, addBoot] = useState([]);
 
-  const fishInputHandler = enteredFish => {
-    setFish(enteredFish);
+  const bootTypeInputHandler = enteredText => {
+    setType(enteredText);
+  };
+  const bootSizeInputHandler = enteredSize => {
+    setSize(enteredSize);
   };
 
-  const addFishToList = () => {
-    addFish(list => [...list, {fish: fish}]);
-    setFish('');
+  const addBootToList = () => {
+    addBoot(list => [...list, {type: type, size: size}]);
+    setSize('');
+    setType('');
   };
 
-  const deleteItem = index => {
-    addFish(list => {
-      return list.filter((fish, id) => {
-        return id != index;
-      });
-    });
-  };
   const renderItem = ({item, index}) => {
     return (
-      <TouchableOpacity onLongPress={() => deleteItem(index)}>
-        <Text key={index} style={styles.itemStyle}>
-          {index + 1}: {item.fish}
-        </Text>
-      </TouchableOpacity>
+      <Text key={index} style={styles.itemStyle}>
+        {index + 1}: {item.type}/{item.size}
+      </Text>
     );
   };
   return (
     <View style={styles.container}>
       <Text style={styles.headerStyle}>
-        React Native Input Components handling
+        React Native Input Components handling Task3
       </Text>
       <View style={styles.formStyle}>
         <TextInput
-          value={fish}
+          value={type}
+          style={styles.textInput}
+          onChangeText={text => bootTypeInputHandler(text)}
+        />
+        <TextInput
+          value={size}
           style={styles.textInput}
           keyboardType="numeric"
-          onChangeText={text => fishInputHandler(text)}
+          onChangeText={text => bootSizeInputHandler(text)}
         />
       </View>
       <View style={styles.formStyle}>
         <Button
           title="Cancel"
           style={styles.buttonStyle}
-          onPress={() => setFish('')}
+          onPress={() => addBootToList('')}
         />
         <Button
-          title="Add Fish"
+          title="Add Boot"
           style={styles.buttonStyle}
-          onPress={addFishToList}
+          onPress={addBootToList}
         />
       </View>
       <View style={styles.row}>
-        <Text>Fish: {fish}</Text>
-        <FlatList data={list} renderItem={renderItem} />
+        <Text>
+          Boot: {type}/{size}
+        </Text>
+        <View style={styles.row}>
+          <FlatList data={list} renderItem={renderItem} />
+        </View>
       </View>
     </View>
   );
@@ -112,16 +116,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#fdfdfd',
     borderColor: '#666',
     borderWidth: 2,
-    width: '70%',
+    width: '40%',
   },
   buttonStyle: {
-    padding: 30,
+    flexBasis: '70%',
+    padding: 3,
   },
   row: {
     flexDirection: 'column',
-    margin: 'auto',
-    padding: 10,
-    width: '70%',
+    padding: 30,
+    width: '100%',
   },
 });
 

@@ -49,8 +49,6 @@ const App = () => {
         />
       </View>
       <View style={styles.row}>
-        {/* <Text>Boot:{boot}</Text>
-        <Text>Size:{bootSize}</Text>*/}
         <FlatList
           data={list}
           renderItem={item => (
