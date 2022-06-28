@@ -67,6 +67,9 @@ const App = () => {
   const openModal = () => {
     setModalVisible(true);
   };
+  const closeModal = () => {
+    setModalVisible(false);
+  };
   function deleteBoot(removeId) {
     addBoot(listOfBoots =>
       listOfBoots.filter((boot, index) => index != removeId),
@@ -117,6 +120,11 @@ const App = () => {
             title="Cancel"
             onPress={cancelBoot}
           />
+          <Button
+            style={styles.buttonStyle}
+            title="Close Modal"
+            onPress={closeModal}
+          />
         </View>
       </Modal>
       <View style={styles.listStyle}>
@@ -140,9 +148,8 @@ const App = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     alignItems: 'center',
-    // backgroundColor: '#1E1A3C',
     margin: 'auto',
     width: '100%',
   },
@@ -181,6 +188,8 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   listStyle: {
+    display: 'flex',
+    flexDirection: 'column',
     padding: 25,
   },
   listitemstyle: {
@@ -197,3 +206,16 @@ const styles = StyleSheet.create({
 });
 
 export default App;
+
+
+import React from 'react';
+import {View, Text} from 'react-native';
+
+export default function AddBoot() {
+  return (
+    <View>
+      <Text> AddBoot</Text>
+    </View>
+  );
+}
+
