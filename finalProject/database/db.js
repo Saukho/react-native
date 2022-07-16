@@ -37,7 +37,6 @@ export async function addUser(name, email, contact) {
         //If the transaction succeeds, this is called
         () => {
           resolve();
-          console.log('Transaction', resolve);
         },
         //If the transaction fails, this is called
         (_, err) => {
@@ -100,7 +99,6 @@ export async function getAllUsers() {
         'select name, email, contact from ' + tableName,
         [],
         (tx, result) => {
-          console.log('get all users', result);
           let items = []; //Create a new empty Javascript array
           //And add all the items of the result (database rows/records) into that table
           if (items.length <= 0) {
@@ -110,7 +108,6 @@ export async function getAllUsers() {
             items.push(result.rows.item(i)); //The form of an item is {"breed": "Pike", "id": 1, "weight": 5000}
             console.log('SQLite result: get all users', result.rows.item(i)); //For debugging purposes to see the data in console window
           }
-          console.log(items); //For debugging purposes to see the data in console window
           resolve(items); //The data the Promise will have when returned
         },
         (tx, err) => {

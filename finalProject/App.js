@@ -6,6 +6,7 @@ import {
   StyleSheet,
   FlatList,
   TextInput,
+  useColorScheme,
 } from 'react-native';
 
 import SQLite from 'react-native-sqlite-storage';
@@ -20,28 +21,25 @@ const App = () => {
   });
   const {name, contact, email} = user;
   const [users, setUsers] = useState([]);
-
   const [error, setError] = useState(null);
-  //enable database connection
-  useEffect(() => {
-    SQLite.DEBUG(true);
-    init();
-  });
 
-  const getData = async () => {
+  useEffect(() => {
+    init();
+    getUsers();
+  }, [setUsers]);
+
+  async function getUsers() {
     try {
-      let data = await getAllUsers();
-      data.forEach(user => {
-        users.push(data, user.id, user.name, user.email, user.contact);
-      });
-      console.log(data, 'fetchAllUser');
-      return data;
-    } catch (error) {
-      console.error(error.message);
+      const result = await getAllUsers(users);
+      // console.log('result', result);
+      setUsers(result);
+      console.log('setUsers', result);
+    } catch (err) {
+      setError(err);
+      console.log('error', err);
     }
-  };
-  getData();
-  console.log(users, 'fetchAllUser');
+  }
+
   const addUserToList = async () => {
     if ((user.name = '')) {
       setError('Name is required');
@@ -57,6 +55,7 @@ const App = () => {
     }
     try {
       await addUser(name, email, contact);
+      setUsers(name, email, contact);
       console.log('User added successfully');
     } catch (e) {
       setError(`An error occurred while saving the user ${e.message}`);
@@ -94,14 +93,11 @@ const App = () => {
       </View>
       <View style={styles.container}>
         <FlatList
-          data={user}
-          renderItem={() => (
-            <Text
-              title={`${name} ${contact}`}
-              subtitle={email}
-              keyExtractor={email}
-              style={styles.buttonText}
-            />
+          data={users}
+          renderItem={item => (
+            <View>
+              <Text style={styles.buttonText}>{item.item.name}</Text>
+            </View>
           )}
         />
       </View>
