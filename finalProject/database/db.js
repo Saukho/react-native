@@ -1,4 +1,4 @@
-import {openDatabase} from 'react-native-sqlite-storage';
+]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]ccccccccccccccccccccccccccccimport {openDatabase} from 'react-native-sqlite-storage';
 const DATABASE = 'user.db';
 
 var db = openDatabase({name: DATABASE});
@@ -10,7 +10,7 @@ export async function init() {
     db.transaction(tx => {
       tx.executeSql(
         `create table if not exists
-          ${tableName}(id integer not null primary key, name text not null, email text not null, contact text not null);`,
+          ${tableName}(id autoincrement primary key, name text not null, email text not null, contact text not null);`,
         [], //second parameters of execution:empty square brackets - this parameter is not needed when creating table
         //If the transaction succeeds, this is called
         () => {
@@ -31,9 +31,9 @@ export async function addUser(name, email, contact) {
     db.transaction(tx => {
       //Here we use the Prepared statement, just putting placeholders to the values to be inserted
       tx.executeSql(
-        `insert into  ${tableName} (name,email,contact) values(?,?,?);`,
+        `insert into  ${tableName} (id,name,email,contact) values(?,?,?,?);`,
         //And the values come here
-        [name, email, contact],
+        [id, name, email, contact],
         //If the transaction succeeds, this is called
         () => {
           resolve();
@@ -48,6 +48,7 @@ export async function addUser(name, email, contact) {
   });
   return promise;
 }
+
 export async function updateUser(id, name, contact, email) {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
@@ -113,6 +114,27 @@ export async function getAllUsers() {
         (tx, err) => {
           console.log('Err');
           console.log('message:', err);
+          reject(err);
+        },
+      );
+    });
+  });
+  return promise;
+}
+export async function dropTable() {
+  const promise = new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      //Here we use the Prepared statement, just putting placeholders to the values to be inserted
+      tx.executeSql(
+        'DROP TABLE ' + tableName,
+        //And the values come here
+        [],
+        //If the transaction succeeds, this is called
+        () => {
+          resolve();
+        },
+        //If the transaction fails, this is called
+        (_, err) => {
           reject(err);
         },
       );

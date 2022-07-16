@@ -3,15 +3,15 @@ import {
   View,
   Text,
   TouchableOpacity,
-  StyleSheet,
+  Stylesheet,
   FlatList,
   TextInput,
-  useColorScheme,
+  SafeAreaView,
 } from 'react-native';
+import Item from './components/Item';
+import styles from './styles';
 
-import SQLite from 'react-native-sqlite-storage';
-
-import {getAllUsers, addUser, init} from './database/db';
+import {init, getAllUsers, addUser, deleteUser, dropTable} from './database/db';
 
 const App = () => {
   const [user, setUser] = useState({
@@ -21,6 +21,8 @@ const App = () => {
   });
   const {name, contact, email} = user;
   const [users, setUsers] = useState([]);
+  const [selectedId, setSelectedId] = useState(null);
+
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -55,11 +57,40 @@ const App = () => {
     }
     try {
       await addUser(name, email, contact);
-      setUsers(name, email, contact);
+      getUsers();
       console.log('User added successfully');
     } catch (e) {
       setError(`An error occurred while saving the user ${e.message}`);
     }
+  };
+  const deleteUserById = async () => {
+    try {
+      await deleteUser(user);
+    } catch (e) {
+      console.log('Users not deleted successfully', e.message);
+    }
+  };
+
+  const dropTables = async () => {
+    try {
+      await dropTable(user);
+    } catch (e) {
+      console.log('Users not deleted successfully', e.message);
+    }
+  };
+
+  const renderItem = ({item}) => {
+    const backgroundColor = item.id === selectedId ? '#f0f7f4' : '#edf2fb';
+    const color = item.id === selectedId ? 'black' : 'white';
+
+    return (
+      <Item
+        item={item}
+        onPress={() => setSelectedId(item.id)}
+        backgroundColor={{backgroundColor}}
+        textColor={{color}}
+      />
+    );
   };
 
   return (
@@ -87,62 +118,20 @@ const App = () => {
         <TouchableOpacity style={styles.button} onPress={addUserToList}>
           <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setUser('')}>
+        <TouchableOpacity style={styles.button} onPress={() => setUsers()}>
           <Text style={styles.buttonText}>Clear</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.container}>
+
+      <View style={styles.flatList}>
         <FlatList
           data={users}
-          renderItem={item => (
-            <View>
-              <Text style={styles.flatListCard}>{item.item.name}</Text>
-            </View>
-          )}
+          keyExtractor={item => item.id}
+          renderItem={renderItem}
         />
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#ffc',
-    alignItems: 'center',
-  },
-  textInput: {
-    borderColor: 'grey',
-    color: 'grey',
-    borderWidth: 1,
-    width: '80%',
-    padding: 10,
-    marginTop: 20,
-  },
-  button: {
-    padding: 10,
-    backgroundColor: 'orange',
-    borderRadius: 5,
-    margin: 10,
-    marginTop: 30,
-    width: 80,
-  },
-  buttonText: {
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-  },
-  flatList: {
-    flex: 1,
-    width: 100,
-  },
-  flatListCard: {
-    textAlign: 'center',
-    color: 'grey',
-    width: 100,
-    backgroundColor: 'orange',
-  },
-});
 
 export default App;

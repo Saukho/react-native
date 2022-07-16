@@ -2,12 +2,31 @@ import React, {useState} from 'react';
 import {StyleSheet, Text, View, TextInput, Button, ScrollView, TouchableOpacity} from 'react-native';
 import AddBoot from './components/AddBoot';
 import UpdateBoot from './components/UpdateBoot';
+import {init,addBoot,updateBoot,deleteBoot} from './database/db.js';
+
+init().then(() => {
+  console.log('database loaded successfully')
+}).catch((err) => {
+  console.log('database error: ' + err);
+})
+
 const App = () => {
   const [bootList, addBootList] = useState([]);
   const [modalVisible, setModalVisible]=useState(false);
   const [updateModalVisible, setUpdateModalVisible]=useState(false);
   const [bootToUpdate, setBootToUpdate]=useState();
   const [bootToUpdateIndex, setBootToUpdateIndex]=useState();
+
+  
+async function saveBoot(boot){
+  try {
+     const saveBoot = await addBoot(boot);
+     console.log('saveBoot' + saveBoot.boot.toString());
+ }catch (err){
+   console.log('saveBoot error: ' + err);
+ }
+}
+
 
   const bootDataHandler = (id, type) => {
     addBootList(bootList => [...bootList, {id:id,type:type}]);
