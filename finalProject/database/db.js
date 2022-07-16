@@ -1,4 +1,4 @@
-]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]ccccccccccccccccccccccccccccimport {openDatabase} from 'react-native-sqlite-storage';
+import {openDatabase} from 'react-native-sqlite-storage';
 const DATABASE = 'user.db';
 
 var db = openDatabase({name: DATABASE});
@@ -26,7 +26,7 @@ export async function init() {
   });
   return promise;
 }
-export async function addUser(name, email, contact) {
+export async function addUser(id, name, email, contact) {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
       //Here we use the Prepared statement, just putting placeholders to the values to be inserted
@@ -126,7 +126,7 @@ export async function dropTable() {
     db.transaction(tx => {
       //Here we use the Prepared statement, just putting placeholders to the values to be inserted
       tx.executeSql(
-        'DROP TABLE ' + tableName,
+        'DROP TABLE ' + tableName + ';',
         //And the values come here
         [],
         //If the transaction succeeds, this is called

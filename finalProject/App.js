@@ -73,7 +73,7 @@ const App = () => {
 
   const dropTables = async () => {
     try {
-      await dropTable(user);
+      await dropTable();
     } catch (e) {
       console.log('Users not deleted successfully', e.message);
     }
@@ -118,7 +118,7 @@ const App = () => {
         <TouchableOpacity style={styles.button} onPress={addUserToList}>
           <Text style={styles.buttonText}>Save</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => setUsers()}>
+        <TouchableOpacity style={styles.button} onPress={dropTable}>
           <Text style={styles.buttonText}>Clear</Text>
         </TouchableOpacity>
       </View>
