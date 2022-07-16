@@ -96,7 +96,7 @@ const App = () => {
           data={users}
           renderItem={item => (
             <View>
-              <Text style={styles.buttonText}>{item.item.name}</Text>
+              <Text style={styles.flatListCard}>{item.item.name}</Text>
             </View>
           )}
         />
@@ -134,8 +134,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   flatList: {
+    flex: 1,
+    width: 100,
+  },
+  flatListCard: {
     textAlign: 'center',
     color: 'grey',
+    width: 100,
+    backgroundColor: 'orange',
   },
 });
 
