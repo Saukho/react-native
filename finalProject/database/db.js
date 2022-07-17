@@ -10,11 +10,10 @@ export async function init() {
     db.transaction(tx => {
       tx.executeSql(
         `create table if not exists
-          ${tableName}(id autoincrement primary key, name text not null, email text not null, contact text not null);`,
+          ${tableName}(id integer primary key autoincrement, name text not null, email text not null, contact text not null);`,
         [], //second parameters of execution:empty square brackets - this parameter is not needed when creating table
         //If the transaction succeeds, this is called
         () => {
-          console.log('Transaction succeeded', tx.toString());
           resolve(); //There is no need to return anything
         },
         //If the transaction fails, this is called
@@ -26,14 +25,14 @@ export async function init() {
   });
   return promise;
 }
-export async function addUser(id, name, email, contact) {
+export async function addUser(name, email, contact) {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
       //Here we use the Prepared statement, just putting placeholders to the values to be inserted
       tx.executeSql(
-        `insert into  ${tableName} (id,name,email,contact) values(?,?,?,?);`,
+        `insert into  ${tableName} (name,email,contact) values(?,?,?);`,
         //And the values come here
-        [id, name, email, contact],
+        [name, email, contact],
         //If the transaction succeeds, this is called
         () => {
           resolve();
@@ -41,7 +40,7 @@ export async function addUser(id, name, email, contact) {
         //If the transaction fails, this is called
         (_, err) => {
           reject(err);
-          console.log('add transaction', err);
+          console.log('add user transaction error: ' + err.message);
         },
       );
     });

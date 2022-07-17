@@ -96,24 +96,26 @@ const App = () => {
   return (
     <View style={styles.container}>
       <Text style={{fontSize: 24}}>Add attedees to list</Text>
-      <TextInput
-        style={styles.textInput}
-        value={name}
-        placeholder="Add name"
-        onChangeText={value => setUser({...user, name: value})}
-      />
-      <TextInput
-        style={styles.textInput}
-        placeholder="Email Address"
-        value={email}
-        onChangeText={value => setUser({...user, email: value})}
-      />
-      <TextInput
-        style={styles.textInput}
-        placeholder="Contact"
-        value={contact}
-        onChangeText={value => setUser({...user, contact: value})}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.textInput}
+          value={name}
+          placeholder="Add name"
+          onChangeText={value => setUser({...user, name: value})}
+        />
+        <TextInput
+          style={styles.textInput}
+          placeholder="Email Address"
+          value={email}
+          onChangeText={value => setUser({...user, email: value})}
+        />
+        <TextInput
+          style={styles.textInput}
+          placeholder="Contact"
+          value={contact}
+          onChangeText={value => setUser({...user, contact: value})}
+        />
+      </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={addUserToList}>
           <Text style={styles.buttonText}>Save</Text>
@@ -124,11 +126,7 @@ const App = () => {
       </View>
 
       <View style={styles.flatList}>
-        <FlatList
-          data={users}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-        />
+        <FlatList data={users} renderItem={renderItem} />
       </View>
     </View>
   );
