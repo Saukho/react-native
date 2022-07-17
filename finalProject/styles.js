@@ -42,10 +42,6 @@ module.exports = {
     flexDirection: 'row',
   },
   flatList: {
-    display: 'flex',
-    flexGrow: 1,
-    width: '100%',
-    height: '100%',
     color: '#000',
   },
   title: {
@@ -58,11 +54,17 @@ module.exports = {
     marginLeft: 22,
   },
   item: {
+    backgroundColor: '#0077b6',
     borderRadius: 5,
     color: 'grey',
     flex: 1,
-    padding: 40,
+    padding: 20,
     marginTop: 20,
+  },
+  card: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   seperatorLine: {
     height: 1,

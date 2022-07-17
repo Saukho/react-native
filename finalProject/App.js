@@ -6,6 +6,7 @@ import {
   Stylesheet,
   FlatList,
   TextInput,
+  Dimensions,
   SafeAreaView,
 } from 'react-native';
 import Item from './components/Item';
@@ -63,6 +64,12 @@ const App = () => {
       setError(`An error occurred while saving the user ${e.message}`);
     }
   };
+
+  const deleteItem = id => {
+    const temp = user.filter(item => item.id !== id);
+    setUser(temp);
+  };
+
   const deleteUserById = async () => {
     try {
       await deleteUser(user);
@@ -126,7 +133,11 @@ const App = () => {
       </View>
 
       <View style={styles.flatList}>
-        <FlatList data={users} renderItem={renderItem} />
+        <FlatList
+          data={users}
+          renderItem={renderItem}
+          deleteItem={deleteItem}
+        />
       </View>
     </View>
   );
