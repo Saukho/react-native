@@ -4,23 +4,38 @@ module.exports = {
     alignItems: 'center',
     padding: 10,
   },
-
   touchableOpacity: {
     backgroundColor: '#0091EA',
     alignItems: 'center',
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    width: '40%',
   },
-
   touchableOpacityText: {
     color: '#FFFFFF',
     fontSize: 23,
     textAlign: 'center',
     padding: 8,
   },
-
+  idinput: {
+    backgroundColor: 'lightblue',
+    width: '30%',
+    borderColor: 'black',
+    borderWidth: 2,
+  },
+  typeinput: {
+    backgroundColor: 'lightblue',
+    width: '60%',
+    borderColor: 'black',
+    borderWidth: 2,
+  },
+  inputstyle: {
+    marginTop: 10,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
   textInputStyle: {
     height: 45,
     width: '90%',
@@ -30,9 +45,20 @@ module.exports = {
     borderRadius: 7,
     marginTop: 15,
   },
-
+  buttonsContainer: {
+    padding: 20,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
   itemsStyle: {
-    fontSize: 22,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    fontSize: 14,
     color: '#000',
   },
 };
