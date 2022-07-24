@@ -3,7 +3,7 @@ import SQlite from 'react-native-sqlite-storage';
 var db = SQlite.openDatabase(
   {name: 'boot.db', location: 'default'},
   () => {
-    console.log('database opened successfully');
+    console.log('Boot.db opened successfully');
   },
   err => {
     console.log('database error:', err);
@@ -15,16 +15,15 @@ var tableName = 'boot';
 export const init = () => {
   const promise = new Promise((resolve, reject) => {
     db.transaction(tx => {
-      // tx.executeSql('DROP TABLE IF EXISTS fish', []); //uncomment this if needed - sometimes it is good to empty the table
-      //By default, primary key is auto_incremented - we do not add anything to that column
       // tx.executeSql(
       //   `DROP TABLE
       //     ${tableName};`,
+      //   [],
       // );
       tx.executeSql(
-        'CREATE TABLE IF NOT EXISTS ' +
-          tableName +
-          '(id INTEGER PRIMARY KEY AUTOINCREMENT, type VARCHAR(255), size VARCHAR(255));',
+        `CREATE TABLE IF NOT EXISTS 
+          ${tableName}
+          (id INTEGER PRIMARY KEY, type VARCHAR(255), size VARCHAR(255));`,
         [], //second parameters of execution:empty square brackets - this parameter is not needed when creating table
         //If the transaction succeeds, this is called
         () => {
@@ -90,17 +89,16 @@ export async function deleteBoot(id) {
       //Here we use the Prepared statement, just putting placeholders to the values to be inserted
       tx.executeSql(
         `DELETE FROM ${tableName} WHERE id=?;`,
-        //And the values come here
         [id],
-        //If the transaction succeeds, this is called
         () => {
           resolve();
         },
-        //If the transaction fails, this is called
+        //If the transaction succeeds, this is called
         (_, err) => {
           reject(err);
         },
       );
+      console.log('deleteBoot called', id);
     });
   });
   return promise;
@@ -118,8 +116,10 @@ export const fetchAllBoots = () => {
           //And add all the items of the result (database rows/records) into that array
           for (let i = 0; i < result.rows.length; i++) {
             items.push(result.rows.item(i));
+
             console.log(result.rows.item(i));
           }
+
           resolve(items); //The data the Promise will have when returned
         },
         (tx, err) => {

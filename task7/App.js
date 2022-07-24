@@ -46,17 +46,16 @@ const App = () => {
     setType(type);
   };
 
-  const getBoots = async () => {
+  async function getBoots() {
     try {
       const result = await fetchAllBoots();
-      console.log(result, 'result');
       setBootList(result);
     } catch (err) {
       console.log(err);
     }
-  };
+  }
 
-  const saveBoot = async () => {
+  async function saveBoot() {
     try {
       const result = await addBoot(type, size);
       setBootList(result);
@@ -65,24 +64,26 @@ const App = () => {
     } catch (error) {
       console.log({error: error.message}, 'save boot failed');
     }
+  }
+
+  const removeBoot = async (removeId, boot) => {
+    try {
+      await deleteBoot(removeId, boot);
+      await getBoots();
+    } catch (err) {
+      console.log({error: err.message}, 'remove boot failed');
+    }
   };
 
-  const removeBoot = (removeId, boot) => {
-    setBootList(bootList =>
-      bootList.filter((boot, index) => index != removeId),
-    );
-    deleteBoot(boot);
-  };
-
-  const renderItem = ({item, index}) => {
+  const listViewItemSeparator = () => {
     return (
-      <TouchableOpacity onLongPress={() => removeBoot(index)}>
-        <View key={index} style={styles.buttonsContainer}>
-          <Text>{index + 1}</Text>
-          <Text>{item.type}</Text>
-          <Text>{item.size}</Text>
-        </View>
-      </TouchableOpacity>
+      <View
+        style={{
+          display: 'flex',
+          height: 1,
+          backgroundColor: '#666',
+        }}
+      />
     );
   };
 
@@ -136,8 +137,19 @@ const App = () => {
       </View>
       <FlatList
         data={bootList}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
+        ItemSeparatorComponent={listViewItemSeparator}
+        keyExtractor={item => item.id}
+        renderItem={({item}) => (
+          <TouchableOpacity
+            key={item.id}
+            onLongPress={() => removeBoot(item.id)}>
+            <View style={styles.buttonsContainer}>
+              <Text>{item.id}</Text>
+              <Text>{item.type}</Text>
+              <Text>{item.size}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
       />
     </View>
   );
