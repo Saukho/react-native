@@ -74,7 +74,7 @@ export async function deleteUser(id) {
     db.transaction(tx => {
       //Here we use the Prepared statement, just putting placeholders to the values to be inserted
       tx.executeSql(
-        'delete from ' + tableName + ' where id=?;',
+        `delete from ${tableName} where id=?;`,
         //And the values come here
         [id],
         //If the transaction succeeds, this is called

@@ -1,18 +1,20 @@
 import React, {useState, useEffect} from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  TextInput,
   View,
+  Text,
+  TouchableOpacity,
+  Stylesheet,
   FlatList,
-  Button,
+  TextInput,
+  Dimensions,
+  SafeAreaView,
 } from 'react-native';
-import ListItem from './components/ListItem';
-import {init, getAllUsers, addUser, deleteUser, dropTable} from './database/db';
-
+import Item from './components/Item';
 import styles from './styles';
 
-export default function App() {
+import {init, getAllUsers, addUser, deleteUser, dropTable} from './database/db';
+
+const App = () => {
   const [user, setUser] = useState({
     name: '',
     email: '',
@@ -21,7 +23,7 @@ export default function App() {
   const {name, contact, email} = user;
   const [users, setUsers] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
-  const [displayerVisible, setDisplayerVisible] = useState(null);
+
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -58,38 +60,20 @@ export default function App() {
       setError(`An error occurred while saving the user ${e.message}`);
     }
   };
-  const deleteItem = ({item, index}) => {
-    console.log(item, index);
-    let a = listData;
-    a.splice(index, 1);
-    console.log(a);
-    setListData([...a]);
+
+  const deleteItem = id => {
+    const temp = user.filter(item => item.id !== id);
+    setUser(temp);
   };
 
-  const deleteUserById = async ({index, item}) => {
+  const deleteUserById = async () => {
     try {
-      const newList = [...user];
-      newList = newList.filter((it, i) => {
-        if (i != index) {
-          return true;
-        } else {
-          return false;
-        }
-      });
-      console.log(newList, 'newList');
-      // await deleteUser(newList);
-      // setUsers(newList);
+      await deleteUser(user);
     } catch (e) {
       console.log('Users not deleted successfully', e.message);
     }
   };
 
-  const updateList = async (id, type) => {
-    users[selectedId] = {id: id, type: type};
-    setUsers(users);
-    console.log('Update listitem', users);
-    deleteUserById(id);
-  };
   const dropTables = async () => {
     try {
       await dropTable();
@@ -100,7 +84,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Add attedees to list</Text>
+      <Text style={{fontSize: 24}}>Add attedees to list</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.textInput}
@@ -121,26 +105,31 @@ export default function App() {
           onChangeText={value => setUser({...user, contact: value})}
         />
       </View>
-
       <View style={styles.buttonContainer}>
-        <Button style={styles.button} title="Save" onPress={addUserToList} />
+        <TouchableOpacity style={styles.button} onPress={addUserToList}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={dropTable}>
+          <Text style={styles.buttonText}>Clear</Text>
+        </TouchableOpacity>
       </View>
-      <FlatList
-        data={users}
-        renderItem={({item, index}) => (
-          <ListItem
-            item={item}
-            index={index}
-            handLeft={() => setUser({...user})}
-            handRight={() => deleteUserById(item.index)}
-          />
-        )}
-        ItemSeparatorComponent={() => <Separator />}
-        keyExtractor={(item, index) => index.toString()}>
-        extraData={selectedId}
-      </FlatList>
+
+      <View style={styles.flatList}>
+        <FlatList
+          data={users}
+          ListEmptyComponent={() => (
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <Text>NO ITEMS TO DISPLAY</Text>
+            </View>
+          )}
+          renderItem={({item, index}) => (
+            <Item item={item} index={index} deleteItem={deleteItem} />
+          )}
+        />
+      </View>
     </View>
   );
-}
+};
 
-const Separator = () => <View style={styles.border}></View>;
+export default App;
