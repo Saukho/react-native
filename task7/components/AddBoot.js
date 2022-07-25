@@ -1,47 +1,91 @@
-import React, {useState} from 'react';
-import {Text, Modal, View, TextInput, Button, StyleSheet} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  Text,
+  Modal,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Button,
+  StyleSheet,
+} from 'react-native';
+import {addBoot, updateBoot, fetchAllBoots, dropTable} from '../database/db.js';
 
 const AddBoot = props => {
-  const [id, setId] = useState();
+  const [size, setSize] = useState('');
   const [type, setType] = useState('');
+  const [bootList, setBootList] = useState([]);
 
-  const idInputHandler = par => {
-    setId(par);
-  };
-  const typeInputHandler = par => {
-    setType(par);
-  };
   const clearBootData = () => {
-    setId('');
+    setSize('');
     setType('');
-    props.hideInputModal();
   };
+
+  const sizeHandler = size => {
+    setSize(size);
+  };
+  const typeHandler = type => {
+    setType(type);
+  };
+
+  async function getBoots() {
+    try {
+      const result = await fetchAllBoots();
+      setBootList(result);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function saveBoot() {
+    try {
+      const result = await addBoot(type, size);
+      setBootList(result);
+      await getBoots();
+      clearBootData();
+    } catch (error) {
+      console.log({error: error.message}, 'save boot failed');
+    }
+  }
+
+  const updateBoot = async (updateId, boot) => {
+    try {
+      await updateBoot(updateId, boot);
+      await getBoots();
+    } catch (error) {
+      console.log({message: error.message}, 'update boot failed');
+    }
+  };
+
+  useEffect(() => {
+    getBoots();
+  }, []);
+
   return (
     <Modal visible={props.visibility}>
       <View style={styles.inputstyle}>
         <TextInput
           style={styles.typeinput}
+          onChangeText={text => typeHandler(text)}
           value={type}
-          onChangeText={typeInputHandler}
           placeholder="Boot type...."
         />
         <TextInput
           style={styles.idinput}
-          value={id}
-          onChangeText={idInputHandler}
+          onChangeText={text => sizeHandler(text)}
+          value={size}
           placeholder="Boot size"
         />
       </View>
-      <View style={styles.inputstyle}>
-        <View style={styles.buttonstyle}>
-          <Button title="Cancel" onPress={clearBootData} />
-        </View>
-        <View style={styles.buttonstyle}>
-          <Button title="CLOSE" onPress={() => props.hideInputModal()} />
-        </View>
-        <View style={styles.buttonstyle}>
-          <Button title="OK" onPress={() => props.saveBoot(id, type)} />
-        </View>
+
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.touchableOpacity} onPress={saveBoot}>
+          <Text style={styles.touchableOpacityText}>Save</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={clearBootData}
+          style={styles.touchableOpacity}>
+          <Text style={styles.touchableOpacityText}>Clear</Text>
+        </TouchableOpacity>
       </View>
     </Modal>
   );

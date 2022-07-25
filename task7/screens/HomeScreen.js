@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   Text,
@@ -7,110 +7,181 @@ import {
   Alert,
   TouchableOpacity,
   TextInput,
+  Button,
+  ScrollView,
   FlatList,
 } from 'react-native';
-import {openDatabase} from 'react-native-sqlite-storage';
+import {
+  init,
+  addBoot,
+  updateBoot,
+  deleteBoot,
+  fetchAllBoots,
+  dropTable,
+} from '../database/db.js';
+import styles from '../styles';
+import UpdateBoot from '../components/UpdateBoot';
 
-import {NavigationContainer, useIsFocused} from '@react-navigation/native';
+init()
+  .then(() => {
+    console.log('Database creation succeeded!');
+  })
+  .catch(err => {
+    console.log('Database IS NOT initialized! ' + err);
+  });
 
-import {createStackNavigator} from '@react-navigation/stack';
-var db = openDatabase({name: 'SchoolDatabase.db'});
+const HomeScreen = props => {
+  const [size, setSize] = useState('');
+  const [type, setType] = useState('');
+  const [bootList, setBootList] = useState([]);
 
-function HomeScreen({navigation}) {
-  const [S_Name, setName] = useState('');
-  const [S_Phone, setPhone] = useState();
-  const [S_Address, setAddress] = useState('');
+  const [updateModalVisible, setUpdateModalVisible] = useState(false);
+  const [bootToUpdate, setBootToUpdate] = useState();
+  const [bootToUpdateIndex, setBootToUpdateIndex] = useState();
+
+  const bootUpdateHandler = (size, type, boot) => {
+    bootList[bootToUpdateIndex] = {size: size, type: type};
+    updateBoot(bootToUpdateIndex, boot);
+    getBoots();
+    setUpdateModalVisible(false);
+  };
+
+  const hideUpdateModal = () => {
+    setUpdateModalVisible(false);
+  };
+  const modBoot = index => {
+    setBootToUpdateIndex(index);
+    setBootToUpdate(index);
+    setUpdateModalVisible(true);
+  };
+
+  const clearBootData = () => {
+    setSize('');
+    setType('');
+  };
+
+  const sizeHandler = size => {
+    setSize(size);
+  };
+  const typeHandler = type => {
+    setType(type);
+  };
+
+  async function getBoots() {
+    try {
+      const result = await fetchAllBoots();
+      setBootList(result);
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
   useEffect(() => {
-    db.transaction(function (txn) {
-      txn.executeSql(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='Student_Table'",
-        [],
-        function (tx, res) {
-          console.log('item:', res.rows.length);
-          if (res.rows.length == 0) {
-            txn.executeSql('DROP TABLE IF EXISTS Student_Table', []);
-            txn.executeSql(
-              'CREATE TABLE IF NOT EXISTS Student_Table(student_id INTEGER PRIMARY KEY AUTOINCREMENT, student_name VARCHAR(30), student_phone INT(15), student_address VARCHAR(255))',
-              [],
-            );
-          }
-        },
-      );
-    });
+    getBoots();
   }, []);
 
-  const insertData = () => {
-    if (S_Name == '' || S_Phone == '' || S_Address == '') {
-      Alert.alert('Please Enter All the Values');
-    } else {
-      db.transaction(function (tx) {
-        tx.executeSql(
-          'INSERT INTO Student_Table (student_name, student_phone, student_address) VALUES (?,?,?)',
-          [S_Name, S_Phone, S_Address],
-          (tx, results) => {
-            console.log('Results', results.rowsAffected);
-            if (results.rowsAffected > 0) {
-              Alert.alert('Data Inserted Successfully....');
-            } else Alert.alert('Failed....');
-          },
-        );
-      });
+  async function saveBoot() {
+    try {
+      const result = await addBoot(type, size);
+      setBootList(result);
+      await getBoots();
+      clearBootData();
+    } catch (error) {
+      console.log({error: error.message}, 'save boot failed');
+    }
+  }
+
+  const removeBoot = async (removeId, boot) => {
+    try {
+      await deleteBoot(removeId, boot);
+      await getBoots();
+    } catch (err) {
+      console.log({error: err.message}, 'remove boot failed');
     }
   };
 
-  navigateToViewScreen = () => {
-    navigation.navigate('ViewAllStudentScreen');
+  const listViewItemSeparator = () => {
+    return (
+      <View style={{height: 0.2, width: '100%', backgroundColor: '#808080'}} />
+    );
+  };
+
+  const renderBoots = item => {
+    return (
+      <TouchableOpacity
+        activeOpacity={0.8}
+        key={item.id}
+        onLongPress={() => removeBoot(item.item.id)}
+        onPress={() => modBoot(item.item.id)}>
+        <View style={styles.itemsStyle}>
+          <Text>{item.item.id}</Text>
+          <Text>{item.item.type}</Text>
+          <Text>{item.item.size}</Text>
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <View style={styles.mainContainer}>
-        <Text style={{fontSize: 24, textAlign: 'center', color: '#000'}}>
-          Insert Data Into SQLite Database
+    <View style={styles.container}>
+      <View style={styles.inputstyle}>
+        <UpdateBoot
+          visibility={updateModalVisible}
+          bootUpdateHandler={bootUpdateHandler}
+          bootToUpdate={bootToUpdate}
+          hideUpdateModal={hideUpdateModal}
+        />
+        <TextInput
+          style={styles.typeinput}
+          onChangeText={text => typeHandler(text)}
+          value={type}
+          placeholder="Boot type...."
+        />
+        <TextInput
+          style={styles.idinput}
+          onChangeText={text => sizeHandler(text)}
+          value={size}
+          keyboardType="numeric"
+          placeholder="Boot size"
+        />
+      </View>
+      <View>
+        <Text style={{textAlign: 'center'}}>
+          {type}:{size}
         </Text>
+      </View>
 
-        <TextInput
-          style={styles.textInputStyle}
-          onChangeText={text => setName(text)}
-          placeholder="Enter Student Name"
-          value={S_Name}
-        />
-
-        <TextInput
-          style={styles.textInputStyle}
-          onChangeText={text => setPhone(text)}
-          placeholder="Enter Student Phone Number"
-          keyboardType={'numeric'}
-          value={S_Phone}
-        />
-
-        <TextInput
-          style={[styles.textInputStyle, {marginBottom: 20}]}
-          onChangeText={text => setAddress(text)}
-          placeholder="Enter Student Address"
-          value={S_Address}
-        />
-
-        <TouchableOpacity style={styles.touchableOpacity} onPress={insertData}>
-          <Text style={styles.touchableOpacityText}>
-            {' '}
-            Click Here To Insert Data Into SQLite Database{' '}
-          </Text>
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.touchableOpacity} onPress={saveBoot}>
+          <Text style={styles.touchableOpacityText}>Save</Text>
         </TouchableOpacity>
-
         <TouchableOpacity
-          style={[
-            styles.touchableOpacity,
-            {marginTop: 20, backgroundColor: '#33691E'},
-          ]}
-          onPress={navigateToViewScreen}>
-          <Text style={styles.touchableOpacityText}>
-            {' '}
-            Click Here View All Students List{' '}
-          </Text>
+          onPress={clearBootData}
+          style={styles.touchableOpacity}>
+          <Text style={styles.touchableOpacityText}>Clear</Text>
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+      <Text style={{padding: 30, textAlign: 'center'}}>Boot list:</Text>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          padding: 30,
+          color: '#000',
+        }}>
+        <Text>Id:</Text>
+        <Text>Type:</Text>
+        <Text>size:</Text>
+      </View>
+      <FlatList
+        data={bootList}
+        ItemSeparatorComponent={listViewItemSeparator}
+        keyExtractor={item => item.id}
+        renderItem={renderBoots}
+      />
+    </View>
   );
-}
+};
+
+export default HomeScreen;

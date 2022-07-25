@@ -23,7 +23,7 @@ export const init = () => {
       tx.executeSql(
         `CREATE TABLE IF NOT EXISTS 
           ${tableName}
-          (id INTEGER PRIMARY KEY, type VARCHAR(255), size VARCHAR(255));`,
+          (id INTEGER PRIMARY KEY, type VARCHAR(255), size INTEGER(255));`,
         [], //second parameters of execution:empty square brackets - this parameter is not needed when creating table
         //If the transaction succeeds, this is called
         () => {

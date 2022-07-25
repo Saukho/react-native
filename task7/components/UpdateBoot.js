@@ -2,16 +2,16 @@ import React, {useState, useEffect} from 'react';
 import {Text, Modal, View, TextInput, Button, StyleSheet} from 'react-native';
 
 const UpdateBoot = props => {
-  const [id, setId] = useState();
+  const [size, setSize] = useState();
   const [type, setType] = useState();
 
   useEffect(() => {
-    setId(props.bootToUpdate==undefined ? "" :props.bootToUpdate.id);
-    setType(props.bootToUpdate==undefined ? "" :props.bootToUpdate.type);
+    setSize(props.bootToUpdate == undefined ? '' : props.bootToUpdate.size);
+    setType(props.bootToUpdate == undefined ? '' : props.bootToUpdate.type);
   }, [props.bootToUpdate]);
 
-  const idInputHandler = par => {
-    setId(par);
+  const sizeInputHandler = par => {
+    setSize(par);
   };
   const typeInputHandler = par => {
     setType(par);
@@ -20,9 +20,9 @@ const UpdateBoot = props => {
     <Modal visible={props.visibility}>
       <View style={styles.inputstyle}>
         <TextInput
-          style={styles.idinput}
-          value={id}
-          onChangeText={idInputHandler}
+          style={styles.sizeinput}
+          value={size}
+          onChangeText={sizeInputHandler}
           placeholder="Boot id...."
         />
         <TextInput
@@ -34,12 +34,12 @@ const UpdateBoot = props => {
       </View>
       <View style={styles.inputstyle}>
         <View style={styles.buttonstyle}>
-          <Button title="Cancel" onPress={()=>props.hideUpdateModal()} />
+          <Button title="Cancel" onPress={() => props.hideUpdateModal()} />
         </View>
         <View style={styles.buttonstyle}>
           <Button
             title="OK"
-            onPress={() => props.bootUpdateHandler(id, type)}
+            onPress={() => props.bootUpdateHandler(size, type)}
           />
         </View>
       </View>
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  idinput: {
+  sizeinput: {
     backgroundColor: 'lightblue',
     width: '20%',
     borderColor: 'black',

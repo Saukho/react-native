@@ -56,7 +56,7 @@ module.exports = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
     textAlign: 'center',
     fontSize: 14,
     color: '#000',
